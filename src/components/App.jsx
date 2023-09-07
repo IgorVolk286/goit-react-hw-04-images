@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
@@ -6,93 +6,86 @@ import { Loader } from './Loader/Loader';
 // import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { fetchApi } from './Api';
 
-export class App extends Component {
-  state = {
-    search: ' ',
-    images: [],
-    page: 1,
-    loading: false,
-    totalHits: ' ',
+export const App = () => {
+  const [search, setSearch] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [totalHits, setTotalHits] = useState('');
+
+  const onClickButtonLoad = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const { search, page, images, totalHits } = this.state;
-    window.scrollBy({
-      top: 700,
-      behavior: 'smooth',
-    });
-    if (images.length === totalHits) {
-      toast.info(`YOU HAVE FULL COLLECTION `, {
-        position: 'bottom-center',
-      });
+  const onSubmitForm = search => {
+    setSearch(search);
+    setImages([]);
+    setPage(1);
+    setTotalHits(1);
+  };
+
+  useEffect(() => {
+    if (!search) {
+      return;
     }
-    if (prevState.search !== search || prevState.page !== page) {
-      this.setState({ loading: true });
+    setLoading(true);
+    fetchApi(search, page)
+      .then(data => {
+        setImages(prevImages => [...prevImages, ...data.hits]);
+        setTotalHits(data.totalHits);
+      })
+      .catch(error => toast.error('Try agane!'))
+      .finally(() => setLoading(false));
+  }, [search, page]);
 
-      fetch(
-        `https://pixabay.com/api/?q=${search}&page=${page}&key=38330111-6d0efda7f4a8d995231e14698&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(respons => respons.json())
-        .then(data => {
-          this.setState(prevState => ({
-            images: [...prevState.images, ...data.hits],
-            totalHits: data.totalHits,
-          }));
-        })
+  window.scrollBy({
+    top: 700,
+    behavior: 'smooth',
+  });
 
-        .catch(error => toast.error('Try agane!'))
-        .finally(() => this.setState({ loading: false }));
+  //     const re = async((search, page) => {
+  //       try {
+  //         setLoading(true);
+  //         const image = await FetchApi(search, page);
+  //         setImages(prevImages => [...prevImages, ...image.hits]);
+  //         setTotalHits(image.totalHits)
 
-      //   await axios.get('https://pixabay.com/api/', {
-      //     params: {
-      //       page: this.state.page,
-      //       q: this.state.search,
-      //       per_page: '12',
-      //       key: '38330111-6d0efda7f4a8d995231e14698',
-      //     }
-      //   }).then(resp => this.setState(prevState => ({
-      //     images: [...prevState.images, ...resp.data.hits],
-      //     totalHits: resp.data.totalHits,
-      //   })).catch(error => toast.error('Try agane!'))
-      //     .finally() => this.setState({ loading: false }))
-      // };
+  //       } catch ((error => toast.error('Try agane!')))
+  //         finally(() => setLoading(false))
+  //   });
+  //   window.scrollBy({
+  //     top: 700,
+  //     behavior: 'smooth',
+  //   });
+  // }, [search, page]);
 
-      // axios.defaults.baseURL = 'https://pixabay.com/api/';
-    }
-  }
+  // fetchApi(search, page)
+  //   .then(data => {
+  //     setImages(prevImages => [...prevImages, ...data.hits]);
+  //     setTotalHits(data.totalHits);
+  //   })
+  //   .catch(error => toast.error('Try agane!'))
+  //   .finally(() => setLoading(false));
+  // }, [search, page]);
 
-  onClickButtonLoad = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
-  };
+  // window.scrollBy({
+  //   top: 700,
+  //   behavior: 'smooth',
+  // });
 
-  onSubmitForm = search => {
-    this.setState({
-      search,
-      images: [],
-      page: 1,
-      totalHits: 1,
-    });
-  };
+  return (
+    <div>
+      <Searchbar onSubmit={onSubmitForm} />
 
-  render() {
-    const { images, totalHits, loading } = this.state;
-    return (
-      <div>
-        <Searchbar onSubmit={this.onSubmitForm} />
+      {images.length !== 0 && <ImageGallery collections={images} />}
 
-        {images.length !== 0 && <ImageGallery collections={images} />}
-
-        {images.length !== 0 && totalHits !== images.length && (
-          <Button onClick={this.onClickButtonLoad} />
-        )}
-        {loading && <Loader />}
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          theme="colored"
-        />
-      </div>
-    );
-  }
-}
+      {images.length !== 0 && totalHits !== images.length && (
+        <Button onClick={onClickButtonLoad} />
+      )}
+      {loading && <Loader />}
+      <ToastContainer position="top-center" autoClose={3000} theme="colored" />
+    </div>
+  );
+};

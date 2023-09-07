@@ -1,6 +1,7 @@
 import React from 'react';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 import { ListGallary } from './ImageGallery.styled';
+import PropTypes from 'prop-types';
 
 export const ImageGallery = ({ collections }) => {
   return (
@@ -10,15 +11,8 @@ export const ImageGallery = ({ collections }) => {
       ))}
     </ListGallary>
   );
+};
 
-  //    const { height: cardHeight } = document;
-
-  //  .querySelector('#list')
-  //   .firstElementChild.getBoundingClientRect();
-
-  // window.scrollBy({
-  //   top: cardHeight * 2,
-  //   behavior: 'smooth',
-  // });
-  // );
+ImageGallery.propTypes = {
+  collections: PropTypes.array.isRequired,
 };
