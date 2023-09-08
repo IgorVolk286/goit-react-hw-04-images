@@ -45,36 +45,6 @@ export const App = () => {
     behavior: 'smooth',
   });
 
-  //     const re = async((search, page) => {
-  //       try {
-  //         setLoading(true);
-  //         const image = await FetchApi(search, page);
-  //         setImages(prevImages => [...prevImages, ...image.hits]);
-  //         setTotalHits(image.totalHits)
-
-  //       } catch ((error => toast.error('Try agane!')))
-  //         finally(() => setLoading(false))
-  //   });
-  //   window.scrollBy({
-  //     top: 700,
-  //     behavior: 'smooth',
-  //   });
-  // }, [search, page]);
-
-  // fetchApi(search, page)
-  //   .then(data => {
-  //     setImages(prevImages => [...prevImages, ...data.hits]);
-  //     setTotalHits(data.totalHits);
-  //   })
-  //   .catch(error => toast.error('Try agane!'))
-  //   .finally(() => setLoading(false));
-  // }, [search, page]);
-
-  // window.scrollBy({
-  //   top: 700,
-  //   behavior: 'smooth',
-  // });
-
   return (
     <div>
       <Searchbar onSubmit={onSubmitForm} />

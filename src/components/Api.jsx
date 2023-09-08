@@ -1,7 +1,7 @@
 // import axios from 'axios';
 
 // export const FetchApi = async (search, page) => {
-//   axios.defaults.baseURL = 'https://api.example.com';
+
 //   const responce = await axios.get('https://api.example.com', {
 //     params: {
 //       page,
@@ -12,6 +12,7 @@
 //       per_page: '12',
 //     },
 //   });
+
 //   return responce.data;
 // };
 
